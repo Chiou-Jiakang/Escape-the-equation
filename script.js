@@ -10,6 +10,8 @@ const gameState = {
   timerId: null,
   gameOver: false,
   inventory: [],
+  wrongAttempts: 0,
+  hintsUsed: 0,
 };
 
 const startScreen = document.getElementById("start-screen");
@@ -38,6 +40,7 @@ const closeModalButton = document.getElementById("close-modal");
 const endingLabel = document.getElementById("ending-label");
 const endingTitle = document.getElementById("ending-title");
 const endingMessage = document.getElementById("ending-message");
+const endingSummary = document.getElementById("ending-summary");
 
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", restartGame);
@@ -60,6 +63,7 @@ answerInput.addEventListener("keydown", (event) => {
 
 function startGame() {
   initializeRandomPuzzles();
+  resetGameState();
 
   startScreen.classList.remove("active");
   gameScreen.classList.add("active");
@@ -73,6 +77,23 @@ function startGame() {
 
 function restartGame() {
   location.reload();
+}
+
+function resetGameState() {
+  gameState.lives = 3;
+  gameState.score = 100;
+  gameState.timeLeft = 600;
+  gameState.currentPuzzleKey = null;
+  gameState.gameOver = false;
+  gameState.inventory = [];
+  gameState.wrongAttempts = 0;
+  gameState.hintsUsed = 0;
+
+  document.querySelectorAll(".room-object").forEach((object) => {
+    object.classList.remove("solved");
+  });
+
+  endingSummary.innerHTML = "";
 }
 
 function initializeRandomPuzzles() {
@@ -140,9 +161,7 @@ function startTimer() {
 }
 
 function updateStatus() {
-  const minutes = Math.floor(gameState.timeLeft / 60);
-  const seconds = gameState.timeLeft % 60;
-  const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const formattedTime = formatTime(gameState.timeLeft);
 
   timerElement.textContent = `時間：${formattedTime}`;
   livesElement.textContent = `生命：${"❤️".repeat(Math.max(gameState.lives, 0))}`;
@@ -336,6 +355,7 @@ function handleWrongAnswer() {
   gameState.lives--;
   gameState.score -= 10;
   gameState.timeLeft = Math.max(0, gameState.timeLeft - 15);
+  gameState.wrongAttempts++;
 
   feedback.textContent = "答錯了。扣 1 點生命，並損失 15 秒。";
 
@@ -364,6 +384,7 @@ function showHint() {
   if (!puzzle.hintUsed) {
     gameState.score -= 15;
     gameState.timeLeft = Math.max(0, gameState.timeLeft - 20);
+    gameState.hintsUsed++;
     puzzle.hintUsed = true;
     updateStatus();
     feedback.textContent = `提示：${puzzle.hint}\n\n已扣 15 分與 20 秒。`;
@@ -444,6 +465,110 @@ function triggerScreenFlash(type) {
   flash.classList.add(type);
 }
 
+function getPerformanceRating(success) {
+  if (!success) {
+    return {
+      key: "failed",
+      label: "Failed｜逃脫失敗",
+      description: "生命值歸零或時間歸零，未能成功逃離教室。",
+    };
+  }
+
+  if (
+    gameState.lives === 3 &&
+    gameState.hintsUsed === 0 &&
+    gameState.timeLeft >= 300
+  ) {
+    return {
+      key: "perfect",
+      label: "Perfect Escape｜完美逃脫",
+      description: "無傷、無提示，並在 5 分鐘內成功逃脫。",
+    };
+  }
+
+  if (
+    gameState.lives === 1 ||
+    gameState.timeLeft < 90 ||
+    gameState.hintsUsed >= 3
+  ) {
+    return {
+      key: "narrow",
+      label: "Narrow Escape｜驚險逃脫",
+      description: "成功逃脫，但過程接近壓線，風險偏高。",
+    };
+  }
+
+  if (
+    gameState.lives === 3 &&
+    gameState.hintsUsed <= 1 &&
+    gameState.timeLeft >= 180
+  ) {
+    return {
+      key: "clean",
+      label: "Clean Escape｜俐落逃脫",
+      description: "保持完整生命值，並以穩定節奏完成逃脫。",
+    };
+  }
+
+  return {
+    key: "escaped",
+    label: "Escaped｜普通逃脫",
+    description: "成功逃脫，但表現未達完美或俐落標準。",
+  };
+}
+
+function formatTime(totalSeconds) {
+  const safeSeconds = Math.max(totalSeconds, 0);
+  const minutes = Math.floor(safeSeconds / 60);
+  const seconds = safeSeconds % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function renderEndingSummary(success) {
+  const rating = getPerformanceRating(success);
+
+  endingSummary.innerHTML = `
+    <div class="rating-badge ${rating.key}">
+      ${rating.label}
+    </div>
+
+    <p>${rating.description}</p>
+
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="summary-label">最終分數</span>
+        <span class="summary-value">${gameState.score}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="summary-label">剩餘時間</span>
+        <span class="summary-value">${formatTime(gameState.timeLeft)}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="summary-label">剩餘生命</span>
+        <span class="summary-value">${Math.max(gameState.lives, 0)} / 3</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="summary-label">答錯次數</span>
+        <span class="summary-value">${gameState.wrongAttempts}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="summary-label">使用提示</span>
+        <span class="summary-value">${gameState.hintsUsed}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="summary-label">完成碎片</span>
+        <span class="summary-value">${gameState.inventory.length} / 5</span>
+      </div>
+    </div>
+  `;
+}
+
 function endGame(success, message) {
   gameState.gameOver = true;
   clearInterval(gameState.timerId);
@@ -455,10 +580,12 @@ function endGame(success, message) {
   if (success) {
     endingLabel.textContent = "ESCAPE SUCCESSFUL";
     endingTitle.textContent = "成功逃脫";
-    endingMessage.textContent = `${message}\n\n最終分數：${gameState.score}`;
+    endingMessage.textContent = message;
   } else {
     endingLabel.textContent = "GAME OVER";
     endingTitle.textContent = "遊戲結束";
-    endingMessage.textContent = `${message}\n\n最終分數：${gameState.score}`;
+    endingMessage.textContent = message;
   }
+
+  renderEndingSummary(success);
 }
