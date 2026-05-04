@@ -1,34 +1,62 @@
-# Escape the Equation: Classroom Crisis
+# Escape the Equation：教室危機
 
-Escape the Equation: Classroom Crisis is a browser-based math escape room game built with HTML, CSS, and JavaScript, where players solve equations, clear puzzle stages, collect code fragments, and escape the classroom before time runs out.
+Escape the Equation：教室危機 是一款使用 HTML、CSS、JavaScript 製作的瀏覽器數學密室逃脫遊戲。
 
-## Features
+玩家醒來後發現自己被困在一間神祕教室中。黑板、書桌、時鐘、地圖與終端機都被數學謎題鎖住。玩家必須在倒數時間結束前解開五道隨機謎題，收集密碼碎片，並輸入最終逃脫密碼，才能離開教室。
 
-- Interactive escape room interface
-- Clickable classroom objects
-- Math-based puzzle system
-- Countdown timer
-- Lives and score tracking
-- Inventory and fragment collection
-- Final code validation
-- Input validation for full-width digits, invalid characters, empty answers, and repeated submissions
-- Hint system with one-time penalty per puzzle
-- Success and failure endings
+## 專案簡介
 
-## Tech Stack
+本專案將數學題目包裝成密室逃脫遊戲機關，而不是單純做成一般選擇題或問答題。
 
-- HTML
-- CSS
-- JavaScript
+遊戲中的題目包含方程式、比例、百分比、數列規律、座標幾何、二次方程式與函數運算等內容。每一個題型都對應到教室中的不同物件，讓玩家透過點擊物件、解開謎題、取得碎片的方式推進遊戲。
 
-## How to Play
+本專案目前已加入隨機題庫系統。每次開始遊戲時，系統會從五個答題區各自的題庫中隨機抽出一題，因此每一局的題目與最終密碼都會不同，避免玩家單純背答案通關。
 
-1. Open `index.html` in a browser.
-2. Click **進入密室** to start the game.
-3. Click objects in the classroom to solve puzzles.
-4. Collect all code fragments.
-5. Enter the final escape code at the exit door before time runs out.
+## 遊戲特色
 
-## Current Status
+- 使用 HTML、CSS、JavaScript 製作，無使用外部框架
+- 可直接在瀏覽器中遊玩
+- 互動式密室逃脫介面
+- 五個可點擊的教室物件
+- 每個答題區各有 15 題題庫
+- 每局隨機抽題，增加重玩性
+- 最終逃脫密碼會依照當局抽到的碎片自動生成
+- 倒數計時系統
+- 生命值與分數系統
+- 密碼碎片收集系統
+- 出口門鎖定與解鎖視覺效果
+- 答對與答錯時的畫面回饋效果
+- 提示系統，同一題只會扣一次提示代價
+- 成功與失敗結局
+- 輸入防呆機制，處理全形數字、空白、中文、英文、特殊符號與重複提交等情況
 
-This is the first playable prototype. Future updates may include harder puzzles, sound effects, improved animations, better room design, and GitHub Pages deployment.
+## 遊戲玩法
+
+玩家需要調查教室中的五個物件，並分別解開對應的數學謎題。
+
+### 1. 黑板
+
+主要題型為代數與方程式。  
+玩家需要根據黑板上的未知數關係，推算出密碼片段。
+
+### 2. 上鎖的書桌
+
+主要題型為比例、百分比、折扣、濃度與分配問題。  
+玩家需要根據紙條或配方提示，算出正確數值。
+
+### 3. 破鐘
+
+主要題型為數列與規律判斷。  
+玩家需要觀察數字之間的變化，找出下一個數字。
+
+### 4. 座標地圖
+
+主要題型為座標幾何。  
+內容包含距離公式、中點、斜率與座標差等概念。
+
+### 5. 方程式終端
+
+主要題型為二次方程式、根與係數、判別式與函數輸出值。  
+玩家需要依照終端機指令計算 access key。
+
+解開五個物件後，出口門會解鎖。玩家必須依照出口門規則排列碎片：時鐘 → 地圖 → 終端 → 黑板 → 書桌
