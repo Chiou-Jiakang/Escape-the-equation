@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>逃離方程式：教室危機</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Start Screen -->
+    <section id="start-screen" class="screen active">
+      <div class="start-card">
+        <p class="eyebrow">HIGH-PRESSURE MATH ESCAPE GAME</p>
+
+        <h1>逃離方程式</h1>
+        <h2>教室危機</h2>
+
+        <p>
+          鐘聲停止後，你在一間陌生教室中醒來。門鎖無法打開，
+          黑板浮現詭異公式，角落的終端機正等待你的答案。
+        </p>
+
+        <p>
+          五個物件、五道謎題、五枚密碼碎片。
+          你必須在倒數結束前破解所有線索，否則這間教室將永遠不會放你離開。
+        </p>
+
+        <button id="start-button">進入密室</button>
+      </div>
+    </section>
+
+    <!-- Game Screen -->
+    <section id="game-screen" class="screen">
+      <header class="game-header">
+        <div>
+          <h1>逃離方程式</h1>
+          <p>教室危機</p>
+        </div>
+
+        <div class="status-panel">
+          <span id="timer">時間：10:00</span>
+          <span id="lives">生命：❤️❤️❤️</span>
+          <span id="score">分數：100</span>
+        </div>
+      </header>
+
+      <main class="game-layout">
+        <section class="room">
+          <div class="floating-equation eq1">x² - 5x + 6 = 0</div>
+          <div class="floating-equation eq2">3x + 7 = 22</div>
+          <div class="floating-equation eq3">√36 = ?</div>
+
+          <button class="room-object blackboard" data-puzzle="blackboard">
+            黑板
+          </button>
+
+          <button class="room-object desk" data-puzzle="desk">
+            上鎖的書桌
+          </button>
+
+          <button class="room-object clock" data-puzzle="clock">破鐘</button>
+
+          <button class="room-object map" data-puzzle="map">座標地圖</button>
+
+          <button class="room-object terminal" data-puzzle="terminal">
+            方程式終端
+          </button>
+
+          <button class="room-object door" data-puzzle="door">出口門</button>
+        </section>
+
+        <aside class="side-panel">
+          <h2>使命</h2>
+          <p id="mission-text">
+            解開教室裡的五道謎題，收集所有密碼碎片，並在時間歸零前逃出去。
+          </p>
+
+          <h2>庫存</h2>
+          <div id="inventory">尚未取得任何碎片。</div>
+        </aside>
+      </main>
+    </section>
+
+    <!-- Puzzle Modal -->
+    <div id="puzzle-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="close-modal" class="close-button">×</button>
+
+        <h2 id="puzzle-title">謎題標題</h2>
+        <p id="puzzle-question">謎題會出現在這裡。</p>
+
+        <input id="answer-input" type="text" placeholder="輸入你的答案" />
+
+        <div class="modal-buttons">
+          <button id="submit-answer">提交答案</button>
+          <button id="hint-button">使用提示</button>
+        </div>
+
+        <p id="feedback"></p>
+      </div>
+    </div>
+
+    <!-- Ending Screen -->
+    <section id="ending-screen" class="screen">
+      <div class="ending-card">
+        <h1 id="ending-title">結局</h1>
+        <p id="ending-message"></p>
+        <button id="restart-button">重新挑戰</button>
+      </div>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
