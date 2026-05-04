@@ -1,68 +1,6 @@
-const puzzles = {
-  blackboard: {
-    title: "黑板方程式",
-    question: "黑板發出微弱的綠光。\n\n3x + 7 = 22\n\n請求出 x 的值。",
-    answer: "5",
-    hint: "先將 7 移到等號右邊，再把兩邊同除以 3。",
-    fragmentName: "線性片段",
-    fragmentValue: "5",
-    solved: false,
-  },
+let puzzles = {};
 
-  desk: {
-    title: "上鎖的書桌",
-    question:
-      "書桌上貼著一張紙條：\n\n一瓶溶液共有 150 ml，其中 20% 是酸性成分。\n\n請問酸性成分有多少 ml？",
-    answer: "30",
-    hint: "20% 可以寫成 0.2，所以可以計算 150 × 0.2。",
-    fragmentName: "比例片段",
-    fragmentValue: "30",
-    solved: false,
-  },
-
-  clock: {
-    title: "破損的時鐘",
-    question:
-      "時鐘上的數字不斷閃爍：\n\n2, 6, 12, 20, 30, ?\n\n請找出下一個數字。",
-    answer: "42",
-    hint: "觀察相鄰兩項的差：4, 6, 8, 10，下一個差應該是多少？",
-    fragmentName: "數列片段",
-    fragmentValue: "42",
-    solved: false,
-  },
-
-  map: {
-    title: "座標地圖",
-    question:
-      "地圖上標記著兩個點：\n\nA(2, 3), B(8, 3)\n\n請問 A 到 B 的距離是多少？",
-    answer: "6",
-    hint: "兩點的 y 座標相同，所以只需要比較 x 座標的差。",
-    fragmentName: "距離片段",
-    fragmentValue: "6",
-    solved: false,
-  },
-
-  terminal: {
-    title: "方程式終端",
-    question: "SYSTEM LOCKED.\n\nx² - 5x + 6 = 0\n\n請輸入較小的根。",
-    answer: "2",
-    hint: "可以分解成 (x - 2)(x - 3) = 0。",
-    fragmentName: "根值片段",
-    fragmentValue: "2",
-    solved: false,
-  },
-
-  door: {
-    title: "出口門",
-    question:
-      "最終密碼順序如下：\n\n根值 → 距離 → 數列 → 線性 → 比例\n\n請輸入最後的逃脫密碼。",
-    answer: "2642530",
-    hint: "依照門上的順序排列你收集到的所有碎片。",
-    fragmentName: "逃脫",
-    fragmentValue: "Escape",
-    solved: false,
-  },
-};
+const FINAL_CODE_ORDER = ["clock", "map", "terminal", "blackboard", "desk"];
 
 const gameState = {
   lives: 3,
@@ -85,6 +23,7 @@ const timerElement = document.getElementById("timer");
 const livesElement = document.getElementById("lives");
 const scoreElement = document.getElementById("score");
 const inventoryElement = document.getElementById("inventory");
+const missionText = document.getElementById("mission-text");
 
 const puzzleModal = document.getElementById("puzzle-modal");
 const puzzleTitle = document.getElementById("puzzle-title");
@@ -96,6 +35,7 @@ const submitAnswerButton = document.getElementById("submit-answer");
 const hintButton = document.getElementById("hint-button");
 const closeModalButton = document.getElementById("close-modal");
 
+const endingLabel = document.getElementById("ending-label");
 const endingTitle = document.getElementById("ending-title");
 const endingMessage = document.getElementById("ending-message");
 
@@ -119,10 +59,15 @@ answerInput.addEventListener("keydown", (event) => {
 });
 
 function startGame() {
+  initializeRandomPuzzles();
+
   startScreen.classList.remove("active");
   gameScreen.classList.add("active");
 
   updateStatus();
+  updateInventory();
+  updateDoorState();
+  updateMissionText();
   startTimer();
 }
 
@@ -130,7 +75,56 @@ function restartGame() {
   location.reload();
 }
 
+function initializeRandomPuzzles() {
+  puzzles = {
+    blackboard: createPuzzleFromPool("blackboard"),
+    desk: createPuzzleFromPool("desk"),
+    clock: createPuzzleFromPool("clock"),
+    map: createPuzzleFromPool("map"),
+    terminal: createPuzzleFromPool("terminal"),
+    door: {
+      title: "出口門",
+      question:
+        "出口門上浮現最後一道規則：\n\n時鐘 → 地圖 → 終端 → 黑板 → 書桌\n\n請依照順序排列你收集到的碎片，輸入最終逃脫密碼。",
+      answer: "",
+      hint: "請照右側出口門規則排列碎片：時鐘片段、地圖片段、終端片段、黑板片段、書桌片段。",
+      fragmentName: "逃脫",
+      fragmentValue: "Escape",
+      solved: false,
+      hintUsed: false,
+    },
+  };
+
+  puzzles.door.answer = generateFinalCode();
+}
+
+function createPuzzleFromPool(poolKey) {
+  if (
+    !puzzlePools ||
+    !puzzlePools[poolKey] ||
+    puzzlePools[poolKey].length === 0
+  ) {
+    throw new Error(`Puzzle pool is missing or empty: ${poolKey}`);
+  }
+
+  const pool = puzzlePools[poolKey];
+  const selectedPuzzle = pool[Math.floor(Math.random() * pool.length)];
+
+  return {
+    ...selectedPuzzle,
+    fragmentValue: selectedPuzzle.answer,
+    solved: false,
+    hintUsed: false,
+  };
+}
+
+function generateFinalCode() {
+  return FINAL_CODE_ORDER.map((key) => puzzles[key].fragmentValue).join("");
+}
+
 function startTimer() {
+  clearInterval(gameState.timerId);
+
   gameState.timerId = setInterval(() => {
     if (gameState.gameOver) {
       return;
@@ -151,11 +145,13 @@ function updateStatus() {
   const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 
   timerElement.textContent = `時間：${formattedTime}`;
-  livesElement.textContent = `生命：${"❤️".repeat(gameState.lives)}`;
+  livesElement.textContent = `生命：${"❤️".repeat(Math.max(gameState.lives, 0))}`;
   scoreElement.textContent = `分數：${gameState.score}`;
 
   if (gameState.timeLeft <= 60) {
     timerElement.classList.add("warning");
+  } else {
+    timerElement.classList.remove("warning");
   }
 }
 
@@ -166,27 +162,31 @@ function openPuzzle(puzzleKey) {
 
   const puzzle = puzzles[puzzleKey];
 
+  if (!puzzle) {
+    return;
+  }
+
   if (puzzleKey === "door" && !allMainPuzzlesSolved()) {
+    gameState.currentPuzzleKey = null;
+
     puzzleTitle.textContent = "出口門";
     puzzleQuestion.textContent =
       "門仍然被鎖住。\n\n你必須先解開五個教室謎題，收集所有碎片後，才能輸入最終密碼。";
     feedback.textContent = "";
     answerInput.value = "";
-    answerInput.disabled = true;
-    submitAnswerButton.disabled = true;
-    hintButton.disabled = true;
+    setModalInputState(false);
     puzzleModal.classList.remove("hidden");
     return;
   }
 
   if (puzzle.solved && puzzleKey !== "door") {
+    gameState.currentPuzzleKey = null;
+
     puzzleTitle.textContent = "已經解開";
     puzzleQuestion.textContent = `你已經解開這道謎題。\n\n已取得：${puzzle.fragmentName} = ${puzzle.fragmentValue}`;
     feedback.textContent = "";
     answerInput.value = "";
-    answerInput.disabled = true;
-    submitAnswerButton.disabled = true;
-    hintButton.disabled = true;
+    setModalInputState(false);
     puzzleModal.classList.remove("hidden");
     return;
   }
@@ -197,9 +197,7 @@ function openPuzzle(puzzleKey) {
   puzzleQuestion.textContent = puzzle.question;
   feedback.textContent = "";
   answerInput.value = "";
-  answerInput.disabled = false;
-  submitAnswerButton.disabled = false;
-  hintButton.disabled = false;
+  setModalInputState(true);
 
   puzzleModal.classList.remove("hidden");
   answerInput.focus();
@@ -207,27 +205,35 @@ function openPuzzle(puzzleKey) {
 
 function closeModal() {
   puzzleModal.classList.add("hidden");
-  answerInput.disabled = false;
-  submitAnswerButton.disabled = false;
-  hintButton.disabled = false;
+  answerInput.value = "";
+  feedback.textContent = "";
+  setModalInputState(true);
+}
+
+function setModalInputState(enabled) {
+  answerInput.disabled = !enabled;
+  submitAnswerButton.disabled = !enabled;
+  hintButton.disabled = !enabled;
 }
 
 function checkAnswer() {
   const puzzleKey = gameState.currentPuzzleKey;
   const puzzle = puzzles[puzzleKey];
 
-  if (!puzzle) {
+  if (!puzzle || gameState.gameOver) {
     return;
   }
 
-  const userAnswer = answerInput.value.trim();
+  const validation = validateAnswerFormat(answerInput.value);
 
-  if (userAnswer === "") {
-    feedback.textContent = "先輸入答案。門不會因為你發呆就自己打開，謝謝。";
+  if (!validation.valid) {
+    feedback.textContent = validation.message;
     return;
   }
 
-  if (normalizeAnswer(userAnswer) === normalizeAnswer(puzzle.answer)) {
+  const normalizedCorrectAnswer = normalizeAnswer(puzzle.answer);
+
+  if (validation.value === normalizedCorrectAnswer) {
     handleCorrectAnswer(puzzleKey);
   } else {
     handleWrongAnswer();
@@ -235,21 +241,74 @@ function checkAnswer() {
 }
 
 function normalizeAnswer(answer) {
-  return answer.replace(/\s+/g, "").toLowerCase();
+  return String(answer)
+    .replace(/[０-９]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 0xfee0),
+    )
+    .replace(/\s+/g, "")
+    .replace(/^x=/i, "")
+    .toLowerCase();
+}
+
+function validateAnswerFormat(answer) {
+  const normalized = normalizeAnswer(answer);
+
+  if (normalized === "") {
+    return {
+      valid: false,
+      message: "先輸入答案。空白不是數學答案，這招騙不了門鎖。",
+    };
+  }
+
+  if (/[\u4e00-\u9fff]/.test(normalized)) {
+    return {
+      valid: false,
+      message: "請使用阿拉伯數字作答，例如 5、30、42。中文數字目前不接受。",
+    };
+  }
+
+  if (/[a-zA-Z]/.test(normalized)) {
+    return {
+      valid: false,
+      message: "答案只需要輸入數字，不需要輸入英文、單位或完整句子。",
+    };
+  }
+
+  if (!/^-?\d+(\.\d+)?$/.test(normalized)) {
+    return {
+      valid: false,
+      message: "答案格式錯誤。請只輸入數字，例如 5、30、42。",
+    };
+  }
+
+  return {
+    valid: true,
+    value: normalized,
+  };
 }
 
 function handleCorrectAnswer(puzzleKey) {
   const puzzle = puzzles[puzzleKey];
 
+  if (puzzle.solved && puzzleKey !== "door") {
+    feedback.textContent = "這道謎題已經解開了，不會重複取得碎片。";
+    return;
+  }
+
+  setModalInputState(false);
+  triggerScreenFlash("correct");
+
   if (puzzleKey === "door") {
+    puzzles.door.solved = true;
     endGame(true, "最後一道鎖發出清脆聲響。你成功逃出了教室。");
     return;
   }
 
   puzzle.solved = true;
-
   gameState.score += 20;
+
   gameState.inventory.push({
+    key: puzzleKey,
     name: puzzle.fragmentName,
     value: puzzle.fragmentValue,
   });
@@ -257,27 +316,34 @@ function handleCorrectAnswer(puzzleKey) {
   feedback.textContent = `答對了。你取得了 ${puzzle.fragmentName} = ${puzzle.fragmentValue}。`;
 
   const object = document.querySelector(`[data-puzzle="${puzzleKey}"]`);
-  object.classList.add("solved");
+  if (object) {
+    object.classList.add("solved");
+  }
 
   updateInventory();
   updateStatus();
+  updateDoorState();
+  updateMissionText();
 
   setTimeout(() => {
     closeModal();
-  }, 1200);
+  }, 1250);
 }
 
 function handleWrongAnswer() {
+  triggerScreenFlash("wrong");
+
   gameState.lives--;
   gameState.score -= 10;
   gameState.timeLeft = Math.max(0, gameState.timeLeft - 15);
 
   feedback.textContent = "答錯了。扣 1 點生命，並損失 15 秒。";
 
-  document.querySelector(".modal-content").classList.add("shake");
+  const modalContent = document.querySelector(".modal-content");
+  modalContent.classList.add("shake");
 
   setTimeout(() => {
-    document.querySelector(".modal-content").classList.remove("shake");
+    modalContent.classList.remove("shake");
   }, 300);
 
   updateStatus();
@@ -291,16 +357,19 @@ function showHint() {
   const puzzleKey = gameState.currentPuzzleKey;
   const puzzle = puzzles[puzzleKey];
 
-  if (!puzzle) {
+  if (!puzzle || gameState.gameOver) {
     return;
   }
 
-  gameState.score -= 15;
-  gameState.timeLeft = Math.max(0, gameState.timeLeft - 20);
-
-  feedback.textContent = `提示：${puzzle.hint}`;
-
-  updateStatus();
+  if (!puzzle.hintUsed) {
+    gameState.score -= 15;
+    gameState.timeLeft = Math.max(0, gameState.timeLeft - 20);
+    puzzle.hintUsed = true;
+    updateStatus();
+    feedback.textContent = `提示：${puzzle.hint}\n\n已扣 15 分與 20 秒。`;
+  } else {
+    feedback.textContent = `提示：${puzzle.hint}\n\n這題已經扣過提示代價，不會重複扣分。`;
+  }
 }
 
 function updateInventory() {
@@ -319,14 +388,60 @@ function updateInventory() {
   });
 }
 
+function updateMissionText() {
+  const solvedCount = Object.keys(puzzles).filter(
+    (key) => key !== "door" && puzzles[key].solved,
+  ).length;
+
+  if (solvedCount < 5) {
+    missionText.textContent = `已收集 ${solvedCount} / 5 個碎片。繼續調查教室中的可疑物件。`;
+  } else {
+    missionText.textContent =
+      "五個碎片已全部收集完成。出口門開始發光，現在可以輸入最終密碼。";
+  }
+}
+
 function allMainPuzzlesSolved() {
   return (
+    puzzles.blackboard &&
+    puzzles.desk &&
+    puzzles.clock &&
+    puzzles.map &&
+    puzzles.terminal &&
     puzzles.blackboard.solved &&
     puzzles.desk.solved &&
     puzzles.clock.solved &&
     puzzles.map.solved &&
     puzzles.terminal.solved
   );
+}
+
+function updateDoorState() {
+  const door = document.querySelector('[data-puzzle="door"]');
+
+  if (!door) {
+    return;
+  }
+
+  if (allMainPuzzlesSolved()) {
+    door.classList.remove("locked");
+    door.classList.add("unlocked");
+  } else {
+    door.classList.add("locked");
+    door.classList.remove("unlocked");
+  }
+}
+
+function triggerScreenFlash(type) {
+  const flash = document.getElementById("screen-flash");
+
+  if (!flash) {
+    return;
+  }
+
+  flash.className = "";
+  void flash.offsetWidth;
+  flash.classList.add(type);
 }
 
 function endGame(success, message) {
@@ -338,9 +453,11 @@ function endGame(success, message) {
   endingScreen.classList.add("active");
 
   if (success) {
+    endingLabel.textContent = "ESCAPE SUCCESSFUL";
     endingTitle.textContent = "成功逃脫";
     endingMessage.textContent = `${message}\n\n最終分數：${gameState.score}`;
   } else {
+    endingLabel.textContent = "GAME OVER";
     endingTitle.textContent = "遊戲結束";
     endingMessage.textContent = `${message}\n\n最終分數：${gameState.score}`;
   }
