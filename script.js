@@ -2,6 +2,68 @@ let puzzles = {};
 
 const FINAL_CODE_ORDER = ["clock", "map", "terminal", "blackboard", "desk"];
 
+const SOUND_PATHS = {
+  correct: "assets/sounds/correct.mp3",
+  wrong: "assets/sounds/wrong.mp3",
+  unlock: "assets/sounds/unlock.mp3",
+  success: "assets/sounds/success.mp3",
+  gameover: "assets/sounds/gameover.mp3",
+};
+
+const soundManager = {
+  enabled: true,
+  sounds: {},
+
+  initialize() {
+    Object.entries(SOUND_PATHS).forEach(([key, path]) => {
+      const audio = new Audio(path);
+      audio.preload = "auto";
+      audio.volume = 0.55;
+      this.sounds[key] = audio;
+    });
+
+    this.updateToggleButton();
+  },
+
+  play(key) {
+    if (!this.enabled || !this.sounds[key]) {
+      return;
+    }
+
+    try {
+      const sound = this.sounds[key];
+      sound.currentTime = 0;
+
+      const playPromise = sound.play();
+
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {
+          // Browser autoplay restrictions or missing audio files should not break the game.
+        });
+      }
+    } catch (error) {
+      // Audio failure should never interrupt gameplay.
+    }
+  },
+
+  toggle() {
+    this.enabled = !this.enabled;
+    this.updateToggleButton();
+  },
+
+  updateToggleButton() {
+    const button = document.getElementById("sound-toggle");
+
+    if (!button) {
+      return;
+    }
+
+    button.textContent = this.enabled ? "音效：開" : "音效：關";
+    button.classList.toggle("muted", !this.enabled);
+    button.setAttribute("aria-pressed", String(this.enabled));
+  },
+};
+
 const gameState = {
   lives: 3,
   score: 100,
@@ -12,6 +74,7 @@ const gameState = {
   inventory: [],
   wrongAttempts: 0,
   hintsUsed: 0,
+  doorUnlockSoundPlayed: false,
 };
 
 const startScreen = document.getElementById("start-screen");
@@ -20,6 +83,7 @@ const endingScreen = document.getElementById("ending-screen");
 
 const startButton = document.getElementById("start-button");
 const restartButton = document.getElementById("restart-button");
+const soundToggleButton = document.getElementById("sound-toggle");
 
 const timerElement = document.getElementById("timer");
 const livesElement = document.getElementById("lives");
@@ -42,11 +106,19 @@ const endingTitle = document.getElementById("ending-title");
 const endingMessage = document.getElementById("ending-message");
 const endingSummary = document.getElementById("ending-summary");
 
+soundManager.initialize();
+
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", restartGame);
 submitAnswerButton.addEventListener("click", checkAnswer);
 hintButton.addEventListener("click", showHint);
 closeModalButton.addEventListener("click", closeModal);
+
+if (soundToggleButton) {
+  soundToggleButton.addEventListener("click", () => {
+    soundManager.toggle();
+  });
+}
 
 document.querySelectorAll(".room-object").forEach((object) => {
   object.addEventListener("click", () => {
@@ -88,6 +160,7 @@ function resetGameState() {
   gameState.inventory = [];
   gameState.wrongAttempts = 0;
   gameState.hintsUsed = 0;
+  gameState.doorUnlockSoundPlayed = false;
 
   document.querySelectorAll(".room-object").forEach((object) => {
     object.classList.remove("solved");
@@ -319,9 +392,12 @@ function handleCorrectAnswer(puzzleKey) {
 
   if (puzzleKey === "door") {
     puzzles.door.solved = true;
+    soundManager.play("success");
     endGame(true, "最後一道鎖發出清脆聲響。你成功逃出了教室。");
     return;
   }
+
+  soundManager.play("correct");
 
   puzzle.solved = true;
   gameState.score += 20;
@@ -351,6 +427,7 @@ function handleCorrectAnswer(puzzleKey) {
 
 function handleWrongAnswer() {
   triggerScreenFlash("wrong");
+  soundManager.play("wrong");
 
   gameState.lives--;
   gameState.score -= 10;
@@ -447,6 +524,11 @@ function updateDoorState() {
   if (allMainPuzzlesSolved()) {
     door.classList.remove("locked");
     door.classList.add("unlocked");
+
+    if (!gameState.doorUnlockSoundPlayed) {
+      soundManager.play("unlock");
+      gameState.doorUnlockSoundPlayed = true;
+    }
   } else {
     door.classList.add("locked");
     door.classList.remove("unlocked");
@@ -572,6 +654,10 @@ function renderEndingSummary(success) {
 function endGame(success, message) {
   gameState.gameOver = true;
   clearInterval(gameState.timerId);
+
+  if (!success) {
+    soundManager.play("gameover");
+  }
 
   puzzleModal.classList.add("hidden");
   gameScreen.classList.remove("active");

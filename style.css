@@ -150,6 +150,37 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.sound-toggle {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  min-width: 110px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: rgba(6, 214, 160, 0.14);
+  border: 1px solid rgba(6, 214, 160, 0.48);
+  color: #06d6a0;
+  font-size: 15px;
+  white-space: nowrap;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background 0.2s,
+    color 0.2s;
+}
+
+.sound-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(6, 214, 160, 0.3);
+}
+
+.sound-toggle.muted {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #c7ccd7;
+}
+
 #timer {
   min-width: 140px;
 }
