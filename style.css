@@ -90,23 +90,42 @@ button:disabled {
   opacity: 0.62;
 }
 
-#start-button,
-#restart-button {
+.start-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
   margin-top: 28px;
+}
+
+#start-button,
+#restart-button,
+.secondary-button {
   padding: 15px 36px;
   border-radius: 999px;
-  background: #ffd166;
-  color: #111;
   font-size: 17px;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
 }
 
+#start-button,
+#restart-button {
+  background: #ffd166;
+  color: #111;
+}
+
+.secondary-button {
+  background: rgba(6, 214, 160, 0.14);
+  border: 1px solid rgba(6, 214, 160, 0.48);
+  color: #06d6a0;
+}
+
 #start-button:hover,
-#restart-button:hover {
+#restart-button:hover,
+.secondary-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 22px rgba(255, 209, 102, 0.72);
+  box-shadow: 0 0 22px rgba(255, 209, 102, 0.55);
 }
 
 .game-header {
@@ -133,8 +152,9 @@ button:disabled {
 .status-panel {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   font-size: 15px;
+  flex-wrap: wrap;
 }
 
 .status-panel span {
@@ -150,12 +170,13 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.settings-button,
 .sound-toggle {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   height: 48px;
-  min-width: 110px;
+  min-width: 104px;
   padding: 0 18px;
   border-radius: 999px;
   background: rgba(6, 214, 160, 0.14);
@@ -170,6 +191,7 @@ button:disabled {
     color 0.2s;
 }
 
+.settings-button:hover,
 .sound-toggle:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 16px rgba(6, 214, 160, 0.3);
@@ -179,6 +201,10 @@ button:disabled {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.18);
   color: #c7ccd7;
+}
+
+#difficulty-label {
+  min-width: 140px;
 }
 
 #timer {
@@ -447,6 +473,10 @@ button:disabled {
   box-shadow: 0 0 44px rgba(255, 209, 102, 0.2);
 }
 
+.settings-content {
+  max-width: 520px;
+}
+
 .close-button {
   position: absolute;
   top: 14px;
@@ -456,7 +486,8 @@ button:disabled {
   font-size: 28px;
 }
 
-#puzzle-title {
+#puzzle-title,
+.settings-content h2 {
   margin-top: 0;
   color: #ffd166;
 }
@@ -504,6 +535,46 @@ button:disabled {
   color: #f4f4f4;
   line-height: 1.65;
   white-space: pre-line;
+}
+
+.setting-group {
+  margin-top: 18px;
+}
+
+.setting-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ffd166;
+  font-weight: 800;
+}
+
+#difficulty-select {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 209, 102, 0.38);
+  background: #10131c;
+  color: #f4f4f4;
+  font-size: 16px;
+  outline: none;
+}
+
+.difficulty-info {
+  margin: 16px 0;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  line-height: 1.65;
+}
+
+.difficulty-info p {
+  margin: 6px 0;
+}
+
+.settings-feedback {
+  margin-top: 16px;
+  color: #cfd5e3;
+  line-height: 1.6;
 }
 
 .warning {
@@ -659,10 +730,6 @@ button:disabled {
 
   .room {
     min-width: 620px;
-  }
-
-  .status-panel {
-    flex-wrap: wrap;
   }
 }
 

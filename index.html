@@ -9,7 +9,6 @@
   <body>
     <div id="screen-flash"></div>
 
-    <!-- Start Screen -->
     <section id="start-screen" class="screen active">
       <div class="start-card">
         <p class="eyebrow">HIGH-PRESSURE MATH ESCAPE GAME</p>
@@ -27,11 +26,19 @@
           你必須在倒數結束前破解所有線索，否則這間教室將永遠不會放你離開。
         </p>
 
-        <button id="start-button">進入密室</button>
+        <div class="start-actions">
+          <button id="start-button">進入密室</button>
+          <button
+            id="start-settings-button"
+            class="secondary-button"
+            type="button"
+          >
+            遊戲設定
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- Game Screen -->
     <section id="game-screen" class="screen">
       <header class="game-header">
         <div class="title-block">
@@ -40,14 +47,10 @@
         </div>
 
         <div class="status-panel">
-          <button
-            id="sound-toggle"
-            class="sound-toggle"
-            type="button"
-            aria-label="Toggle sound"
-          >
-            音效：開
+          <button id="settings-button" class="settings-button" type="button">
+            設定
           </button>
+          <span id="difficulty-label">難度：Normal</span>
           <span id="timer">時間：10:00</span>
           <span id="lives">生命：❤️❤️❤️</span>
           <span id="score">分數：100</span>
@@ -64,19 +67,14 @@
           <button class="room-object blackboard" data-puzzle="blackboard">
             黑板
           </button>
-
           <button class="room-object desk" data-puzzle="desk">
             上鎖的書桌
           </button>
-
           <button class="room-object clock" data-puzzle="clock">破鐘</button>
-
           <button class="room-object map" data-puzzle="map">座標地圖</button>
-
           <button class="room-object terminal" data-puzzle="terminal">
             方程式終端
           </button>
-
           <button class="room-object door locked" data-puzzle="door">
             出口門
           </button>
@@ -107,7 +105,6 @@
       </main>
     </section>
 
-    <!-- Puzzle Modal -->
     <div id="puzzle-modal" class="modal hidden">
       <div class="modal-content">
         <button
@@ -137,7 +134,43 @@
       </div>
     </div>
 
-    <!-- Ending Screen -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-content settings-content">
+        <button
+          id="close-settings"
+          class="close-button"
+          aria-label="Close settings modal"
+        >
+          ×
+        </button>
+
+        <h2>遊戲設定</h2>
+
+        <div class="setting-group">
+          <label for="difficulty-select">難度模式</label>
+          <select id="difficulty-select">
+            <option value="easy">Easy｜練習逃脫</option>
+            <option value="normal">Normal｜標準逃脫</option>
+            <option value="hard">Hard｜壓力逃脫</option>
+          </select>
+        </div>
+
+        <div class="difficulty-info">
+          <p><strong>Easy：</strong>5 生命，15 分鐘。</p>
+          <p><strong>Normal：</strong>3 生命，10 分鐘。</p>
+          <p><strong>Hard：</strong>2 生命，7 分鐘。</p>
+        </div>
+
+        <button id="sound-toggle" class="sound-toggle" type="button">
+          音效：開
+        </button>
+
+        <p id="settings-feedback" class="settings-feedback">
+          難度會在下一局開始時套用；音效設定會立即生效。
+        </p>
+      </div>
+    </div>
+
     <section id="ending-screen" class="screen">
       <div class="ending-card">
         <p class="eyebrow" id="ending-label">GAME RESULT</p>

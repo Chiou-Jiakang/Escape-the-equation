@@ -2,6 +2,24 @@ let puzzles = {};
 
 const FINAL_CODE_ORDER = ["clock", "map", "terminal", "blackboard", "desk"];
 
+const DIFFICULTY_SETTINGS = {
+  easy: {
+    label: "Easy",
+    lives: 5,
+    timeLeft: 900,
+  },
+  normal: {
+    label: "Normal",
+    lives: 3,
+    timeLeft: 600,
+  },
+  hard: {
+    label: "Hard",
+    lives: 2,
+    timeLeft: 420,
+  },
+};
+
 const SOUND_PATHS = {
   correct: "assets/sounds/correct.mp3",
   wrong: "assets/sounds/wrong.mp3",
@@ -37,13 +55,9 @@ const soundManager = {
       const playPromise = sound.play();
 
       if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {
-          // Browser autoplay restrictions or missing audio files should not break the game.
-        });
+        playPromise.catch(() => {});
       }
-    } catch (error) {
-      // Audio failure should never interrupt gameplay.
-    }
+    } catch (error) {}
   },
 
   toggle() {
@@ -66,11 +80,15 @@ const soundManager = {
 
 const gameState = {
   lives: 3,
+  maxLives: 3,
   score: 100,
   timeLeft: 600,
+  selectedDifficulty: "normal",
+  activeDifficulty: "normal",
   currentPuzzleKey: null,
   timerId: null,
   gameOver: false,
+  gameStarted: false,
   inventory: [],
   wrongAttempts: 0,
   hintsUsed: 0,
@@ -83,11 +101,19 @@ const endingScreen = document.getElementById("ending-screen");
 
 const startButton = document.getElementById("start-button");
 const restartButton = document.getElementById("restart-button");
+const settingsButton = document.getElementById("settings-button");
+const startSettingsButton = document.getElementById("start-settings-button");
+
+const settingsModal = document.getElementById("settings-modal");
+const closeSettingsButton = document.getElementById("close-settings");
+const difficultySelect = document.getElementById("difficulty-select");
+const settingsFeedback = document.getElementById("settings-feedback");
 const soundToggleButton = document.getElementById("sound-toggle");
 
 const timerElement = document.getElementById("timer");
 const livesElement = document.getElementById("lives");
 const scoreElement = document.getElementById("score");
+const difficultyLabel = document.getElementById("difficulty-label");
 const inventoryElement = document.getElementById("inventory");
 const missionText = document.getElementById("mission-text");
 
@@ -107,6 +133,7 @@ const endingMessage = document.getElementById("ending-message");
 const endingSummary = document.getElementById("ending-summary");
 
 soundManager.initialize();
+initializeSettingsUI();
 
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", restartGame);
@@ -114,11 +141,24 @@ submitAnswerButton.addEventListener("click", checkAnswer);
 hintButton.addEventListener("click", showHint);
 closeModalButton.addEventListener("click", closeModal);
 
-if (soundToggleButton) {
-  soundToggleButton.addEventListener("click", () => {
-    soundManager.toggle();
-  });
-}
+settingsButton.addEventListener("click", openSettings);
+startSettingsButton.addEventListener("click", openSettings);
+closeSettingsButton.addEventListener("click", closeSettings);
+
+soundToggleButton.addEventListener("click", () => {
+  soundManager.toggle();
+});
+
+difficultySelect.addEventListener("change", () => {
+  gameState.selectedDifficulty = difficultySelect.value;
+  updateDifficultyLabel();
+
+  if (gameState.gameStarted && !gameState.gameOver) {
+    settingsFeedback.textContent = "難度已更新，會在下一局重新開始時套用。";
+  } else {
+    settingsFeedback.textContent = "難度設定已更新，開始遊戲後會套用。";
+  }
+});
 
 document.querySelectorAll(".room-object").forEach((object) => {
   object.addEventListener("click", () => {
@@ -132,6 +172,36 @@ answerInput.addEventListener("keydown", (event) => {
     checkAnswer();
   }
 });
+
+function initializeSettingsUI() {
+  difficultySelect.value = gameState.selectedDifficulty;
+  updateDifficultyLabel();
+}
+
+function openSettings() {
+  settingsModal.classList.remove("hidden");
+}
+
+function closeSettings() {
+  settingsModal.classList.add("hidden");
+}
+
+function getCurrentDifficultyConfig() {
+  return (
+    DIFFICULTY_SETTINGS[gameState.selectedDifficulty] ||
+    DIFFICULTY_SETTINGS.normal
+  );
+}
+
+function updateDifficultyLabel() {
+  const config =
+    DIFFICULTY_SETTINGS[gameState.selectedDifficulty] ||
+    DIFFICULTY_SETTINGS.normal;
+
+  if (difficultyLabel) {
+    difficultyLabel.textContent = `難度：${config.label}`;
+  }
+}
 
 function startGame() {
   initializeRandomPuzzles();
@@ -152,15 +222,23 @@ function restartGame() {
 }
 
 function resetGameState() {
-  gameState.lives = 3;
+  const difficulty = getCurrentDifficultyConfig();
+
+  gameState.maxLives = difficulty.lives;
+  gameState.lives = difficulty.lives;
+  gameState.timeLeft = difficulty.timeLeft;
+  gameState.activeDifficulty = gameState.selectedDifficulty;
+
   gameState.score = 100;
-  gameState.timeLeft = 600;
   gameState.currentPuzzleKey = null;
   gameState.gameOver = false;
+  gameState.gameStarted = true;
   gameState.inventory = [];
   gameState.wrongAttempts = 0;
   gameState.hintsUsed = 0;
   gameState.doorUnlockSoundPlayed = false;
+
+  updateDifficultyLabel();
 
   document.querySelectorAll(".room-object").forEach((object) => {
     object.classList.remove("solved");
@@ -234,9 +312,7 @@ function startTimer() {
 }
 
 function updateStatus() {
-  const formattedTime = formatTime(gameState.timeLeft);
-
-  timerElement.textContent = `時間：${formattedTime}`;
+  timerElement.textContent = `時間：${formatTime(gameState.timeLeft)}`;
   livesElement.textContent = `生命：${"❤️".repeat(Math.max(gameState.lives, 0))}`;
   scoreElement.textContent = `分數：${gameState.score}`;
 
@@ -366,7 +442,7 @@ function validateAnswerFormat(answer) {
     };
   }
 
-  if (!/^-?\d+(\.\d+)?$/.test(normalized)) {
+  if (!/^-?\d+(\.\d)?\d*$/.test(normalized)) {
     return {
       valid: false,
       message: "答案格式錯誤。請只輸入數字，例如 5、30、42。",
@@ -557,14 +633,14 @@ function getPerformanceRating(success) {
   }
 
   if (
-    gameState.lives === 3 &&
+    gameState.lives === gameState.maxLives &&
     gameState.hintsUsed === 0 &&
     gameState.timeLeft >= 300
   ) {
     return {
       key: "perfect",
       label: "Perfect Escape｜完美逃脫",
-      description: "無傷、無提示，並在 5 分鐘內成功逃脫。",
+      description: "無傷、無提示，並在高效率狀態下成功逃脫。",
     };
   }
 
@@ -581,7 +657,7 @@ function getPerformanceRating(success) {
   }
 
   if (
-    gameState.lives === 3 &&
+    gameState.lives === gameState.maxLives &&
     gameState.hintsUsed <= 1 &&
     gameState.timeLeft >= 180
   ) {
@@ -609,6 +685,7 @@ function formatTime(totalSeconds) {
 
 function renderEndingSummary(success) {
   const rating = getPerformanceRating(success);
+  const activeDifficulty = DIFFICULTY_SETTINGS[gameState.activeDifficulty];
 
   endingSummary.innerHTML = `
     <div class="rating-badge ${rating.key}">
@@ -618,6 +695,11 @@ function renderEndingSummary(success) {
     <p>${rating.description}</p>
 
     <div class="summary-grid">
+      <div class="summary-item">
+        <span class="summary-label">難度模式</span>
+        <span class="summary-value">${activeDifficulty.label}</span>
+      </div>
+
       <div class="summary-item">
         <span class="summary-label">最終分數</span>
         <span class="summary-value">${gameState.score}</span>
@@ -630,7 +712,7 @@ function renderEndingSummary(success) {
 
       <div class="summary-item">
         <span class="summary-label">剩餘生命</span>
-        <span class="summary-value">${Math.max(gameState.lives, 0)} / 3</span>
+        <span class="summary-value">${Math.max(gameState.lives, 0)} / ${gameState.maxLives}</span>
       </div>
 
       <div class="summary-item">
