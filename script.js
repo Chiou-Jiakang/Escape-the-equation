@@ -2,6 +2,8 @@ let puzzles = {};
 
 const FINAL_CODE_ORDER = ["clock", "map", "terminal", "blackboard", "desk"];
 
+const BEST_RECORD_STORAGE_KEY = "escapeTheEquationBestRecordsV1";
+
 const DIFFICULTY_SETTINGS = {
   easy: {
     label: "Easy",
@@ -18,6 +20,14 @@ const DIFFICULTY_SETTINGS = {
     lives: 2,
     timeLeft: 420,
   },
+};
+
+const RATING_PRIORITY = {
+  failed: 0,
+  narrow: 1,
+  escaped: 2,
+  clean: 3,
+  perfect: 4,
 };
 
 const SOUND_PATHS = {
@@ -55,9 +65,13 @@ const soundManager = {
       const playPromise = sound.play();
 
       if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {});
+        playPromise.catch(() => {
+          // Browser autoplay restrictions or missing audio files should not break the game.
+        });
       }
-    } catch (error) {}
+    } catch (error) {
+      // Audio failure should never interrupt gameplay.
+    }
   },
 
   toggle() {
@@ -189,6 +203,13 @@ function closeSettings() {
 function getCurrentDifficultyConfig() {
   return (
     DIFFICULTY_SETTINGS[gameState.selectedDifficulty] ||
+    DIFFICULTY_SETTINGS.normal
+  );
+}
+
+function getActiveDifficultyConfig() {
+  return (
+    DIFFICULTY_SETTINGS[gameState.activeDifficulty] ||
     DIFFICULTY_SETTINGS.normal
   );
 }
@@ -442,7 +463,7 @@ function validateAnswerFormat(answer) {
     };
   }
 
-  if (!/^-?\d+(\.\d)?\d*$/.test(normalized)) {
+  if (!/^-?\d+(\.\d+)?$/.test(normalized)) {
     return {
       valid: false,
       message: "答案格式錯誤。請只輸入數字，例如 5、30、42。",
@@ -683,9 +704,172 @@ function formatTime(totalSeconds) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
+function getElapsedTime() {
+  const activeDifficulty = getActiveDifficultyConfig();
+  return activeDifficulty.timeLeft - gameState.timeLeft;
+}
+
+function loadBestRecords() {
+  try {
+    const rawRecords = localStorage.getItem(BEST_RECORD_STORAGE_KEY);
+    return rawRecords ? JSON.parse(rawRecords) : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveBestRecords(records) {
+  try {
+    localStorage.setItem(BEST_RECORD_STORAGE_KEY, JSON.stringify(records));
+  } catch (error) {
+    // localStorage errors should not break the game.
+  }
+}
+
+function getBestRecordForDifficulty(difficultyKey) {
+  const records = loadBestRecords();
+  return records[difficultyKey] || null;
+}
+
+function updateBestRecordIfNeeded(success, rating) {
+  const difficultyKey = gameState.activeDifficulty;
+  const difficulty = getActiveDifficultyConfig();
+
+  if (!success) {
+    return {
+      updated: false,
+      record: getBestRecordForDifficulty(difficultyKey),
+      improvements: [],
+    };
+  }
+
+  const records = loadBestRecords();
+  const currentRecord = records[difficultyKey] || null;
+  const elapsedSeconds = getElapsedTime();
+
+  const nextRecord = currentRecord
+    ? { ...currentRecord }
+    : {
+        difficulty: difficulty.label,
+        highestScore: null,
+        fastestEscapeSeconds: null,
+        bestRatingKey: null,
+        bestRatingLabel: null,
+        fewestWrongAttempts: null,
+        fewestHintsUsed: null,
+        updatedAt: null,
+      };
+
+  const improvements = [];
+
+  if (
+    nextRecord.highestScore === null ||
+    gameState.score > nextRecord.highestScore
+  ) {
+    nextRecord.highestScore = gameState.score;
+    improvements.push("最高分");
+  }
+
+  if (
+    nextRecord.fastestEscapeSeconds === null ||
+    elapsedSeconds < nextRecord.fastestEscapeSeconds
+  ) {
+    nextRecord.fastestEscapeSeconds = elapsedSeconds;
+    improvements.push("最快通關時間");
+  }
+
+  const currentRatingRank = RATING_PRIORITY[rating.key] ?? 0;
+  const bestRatingRank = RATING_PRIORITY[nextRecord.bestRatingKey] ?? -1;
+
+  if (nextRecord.bestRatingKey === null || currentRatingRank > bestRatingRank) {
+    nextRecord.bestRatingKey = rating.key;
+    nextRecord.bestRatingLabel = rating.label;
+    improvements.push("最佳評級");
+  }
+
+  if (
+    nextRecord.fewestWrongAttempts === null ||
+    gameState.wrongAttempts < nextRecord.fewestWrongAttempts
+  ) {
+    nextRecord.fewestWrongAttempts = gameState.wrongAttempts;
+    improvements.push("最少答錯次數");
+  }
+
+  if (
+    nextRecord.fewestHintsUsed === null ||
+    gameState.hintsUsed < nextRecord.fewestHintsUsed
+  ) {
+    nextRecord.fewestHintsUsed = gameState.hintsUsed;
+    improvements.push("最少提示次數");
+  }
+
+  if (improvements.length > 0) {
+    nextRecord.updatedAt = new Date().toISOString();
+    records[difficultyKey] = nextRecord;
+    saveBestRecords(records);
+  }
+
+  return {
+    updated: improvements.length > 0,
+    record: nextRecord,
+    improvements,
+  };
+}
+
+function renderBestRecordSection(recordResult) {
+  if (!recordResult.record) {
+    return `
+      <div class="record-card">
+        <h3>最佳紀錄</h3>
+        <p>此難度目前尚無成功逃脫紀錄。</p>
+      </div>
+    `;
+  }
+
+  const record = recordResult.record;
+  const updateText = recordResult.updated
+    ? `本局刷新：${recordResult.improvements.join("、")}`
+    : "本局未刷新最佳紀錄。";
+
+  return `
+    <div class="record-card ${recordResult.updated ? "new-record" : ""}">
+      <h3>${recordResult.updated ? "刷新最佳紀錄" : "最佳紀錄"}</h3>
+      <p>${updateText}</p>
+
+      <div class="record-grid">
+        <div class="record-item">
+          <span class="record-label">最高分</span>
+          <span class="record-value">${record.highestScore}</span>
+        </div>
+
+        <div class="record-item">
+          <span class="record-label">最快通關</span>
+          <span class="record-value">${formatTime(record.fastestEscapeSeconds)}</span>
+        </div>
+
+        <div class="record-item">
+          <span class="record-label">最佳評級</span>
+          <span class="record-value">${record.bestRatingLabel}</span>
+        </div>
+
+        <div class="record-item">
+          <span class="record-label">最少答錯</span>
+          <span class="record-value">${record.fewestWrongAttempts}</span>
+        </div>
+
+        <div class="record-item">
+          <span class="record-label">最少提示</span>
+          <span class="record-value">${record.fewestHintsUsed}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderEndingSummary(success) {
   const rating = getPerformanceRating(success);
-  const activeDifficulty = DIFFICULTY_SETTINGS[gameState.activeDifficulty];
+  const activeDifficulty = getActiveDifficultyConfig();
+  const recordResult = updateBestRecordIfNeeded(success, rating);
 
   endingSummary.innerHTML = `
     <div class="rating-badge ${rating.key}">
@@ -703,6 +887,11 @@ function renderEndingSummary(success) {
       <div class="summary-item">
         <span class="summary-label">最終分數</span>
         <span class="summary-value">${gameState.score}</span>
+      </div>
+
+      <div class="summary-item">
+        <span class="summary-label">本局耗時</span>
+        <span class="summary-value">${formatTime(getElapsedTime())}</span>
       </div>
 
       <div class="summary-item">
@@ -730,6 +919,8 @@ function renderEndingSummary(success) {
         <span class="summary-value">${gameState.inventory.length} / 5</span>
       </div>
     </div>
+
+    ${renderBestRecordSection(recordResult)}
   `;
 }
 
@@ -742,6 +933,7 @@ function endGame(success, message) {
   }
 
   puzzleModal.classList.add("hidden");
+  settingsModal.classList.add("hidden");
   gameScreen.classList.remove("active");
   endingScreen.classList.add("active");
 

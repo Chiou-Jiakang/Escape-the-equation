@@ -3,7 +3,7 @@ const puzzlePools = {
     {
       title: "黑板上的雙重方程",
       question:
-        "黑板上的粉筆字突然亮起：\n\n2a + 5 = 17\nb - a = 4\n\n旁邊寫著：Code Fragment = ab\n\n請輸入這段密碼片段。",
+        "黑板上的粉筆字突然亮起：\n\n2a + 5 = 17，b - a = 4。\n\nCode Fragment = ab。\n\n請輸入這段密碼片段。",
       answer: "610",
       hint: "先求出 a = 6，再用 b - a = 4 求出 b = 10。最後把 a 和 b 直接連在一起。",
       fragmentName: "黑板片段",
@@ -11,7 +11,7 @@ const puzzlePools = {
     {
       title: "黑板上的代數鎖",
       question:
-        "黑板浮現兩條線索：\n\n4x - 3 = 17\ny = x + 7\n\nCode Fragment = yx\n\n請輸入這段密碼片段。",
+        "黑板浮現兩條線索：\n\n4x - 3 = 17，y = x + 7。\n\nCode Fragment = yx。\n\n請輸入這段密碼片段。",
       answer: "125",
       hint: "先求 x = 5，再算 y = 12。Code Fragment = yx，所以是 12 接 5。",
       fragmentName: "黑板片段",
@@ -19,7 +19,7 @@ const puzzlePools = {
     {
       title: "粉筆留下的座號",
       question:
-        "黑板中央寫著：\n\n3m + 2 = 20\nn = 2m - 1\n\nCode Fragment = mn\n\n請輸入這段密碼片段。",
+        "黑板中央寫著：\n\n3m + 2 = 20，n = 2m - 1。\n\nCode Fragment = mn。\n\n請輸入這段密碼片段。",
       answer: "611",
       hint: "先求 m = 6，再算 n = 11。Code Fragment = mn，所以是 6 接 11。",
       fragmentName: "黑板片段",
@@ -27,7 +27,7 @@ const puzzlePools = {
     {
       title: "被擦掉一半的公式",
       question:
-        "黑板上殘留著兩行字：\n\n5p - 8 = 37\nq = p - 5\n\nCode Fragment = pq\n\n請輸入這段密碼片段。",
+        "黑板上殘留著兩行字：\n\n5p - 8 = 37，q = p - 5。\n\nCode Fragment = pq。\n\n請輸入這段密碼片段。",
       answer: "94",
       hint: "5p - 8 = 37，所以 p = 9。q = 9 - 5 = 4。Code Fragment = pq。",
       fragmentName: "黑板片段",
@@ -35,7 +35,7 @@ const puzzlePools = {
     {
       title: "黑板角落的雙數字",
       question:
-        "黑板角落寫著：\n\nr ÷ 3 + 4 = 10\ns = r + 10\n\nCode Fragment = rs\n\n請輸入這段密碼片段。",
+        "黑板角落寫著：\n\nr ÷ 3 + 4 = 10，s = r + 10。\n\nCode Fragment = rs。\n\n請輸入這段密碼片段。",
       answer: "1828",
       hint: "r ÷ 3 = 6，所以 r = 18。s = 28。Code Fragment = rs。",
       fragmentName: "黑板片段",
@@ -43,7 +43,7 @@ const puzzlePools = {
     {
       title: "粉筆圈起的未知數",
       question:
-        "黑板上有一個被圈起來的提示：\n\n7u + 1 = 50\nv = 3u\n\nCode Fragment = vu\n\n請輸入這段密碼片段。",
+        "黑板上有一個被圈起來的提示：\n\n7u + 1 = 50，v = 3u。\n\nCode Fragment = vu。\n\n請輸入這段密碼片段。",
       answer: "217",
       hint: "u = 7，v = 21。Code Fragment = vu，所以是 21 接 7。",
       fragmentName: "黑板片段",
@@ -51,7 +51,7 @@ const puzzlePools = {
     {
       title: "黑板下方的密碼式",
       question:
-        "黑板下方刻著：\n\n2c + 9 = 31\nd = c - 4\n\nCode Fragment = cd\n\n請輸入這段密碼片段。",
+        "黑板下方刻著：\n\n2c + 9 = 31，d = c - 4。\n\nCode Fragment = cd。\n\n請輸入這段密碼片段。",
       answer: "117",
       hint: "c = 11，d = 7。Code Fragment = cd。",
       fragmentName: "黑板片段",
@@ -59,7 +59,7 @@ const puzzlePools = {
     {
       title: "斷裂的等式",
       question:
-        "黑板上出現兩個斷裂的等式：\n\n6h - 12 = 42\nk = h + 8\n\nCode Fragment = kh\n\n請輸入這段密碼片段。",
+        "黑板上出現兩個斷裂的等式：\n\n6h - 12 = 42，k = h + 8。\n\nCode Fragment = kh。\n\n請輸入這段密碼片段。",
       answer: "179",
       hint: "h = 9，k = 17。Code Fragment = kh。",
       fragmentName: "黑板片段",
@@ -67,7 +67,7 @@ const puzzlePools = {
     {
       title: "黑板中央的連鎖式",
       question:
-        "黑板中央寫著：\n\n9t + 6 = 87\nw = t × 4\n\nCode Fragment = wt\n\n請輸入這段密碼片段。",
+        "黑板中央寫著：\n\n9t + 6 = 87，w = t × 4。\n\nCode Fragment = wt。\n\n請輸入這段密碼片段。",
       answer: "369",
       hint: "t = 9，w = 36。Code Fragment = wt。",
       fragmentName: "黑板片段",
@@ -75,7 +75,7 @@ const puzzlePools = {
     {
       title: "被鎖住的變數",
       question:
-        "黑板上出現一組鎖鏈符號：\n\n8z - 5 = 59\ny = z + 12\n\nCode Fragment = zy\n\n請輸入這段密碼片段。",
+        "黑板上出現一組鎖鏈符號：\n\n8z - 5 = 59，y = z + 12。\n\nCode Fragment = zy。\n\n請輸入這段密碼片段。",
       answer: "820",
       hint: "z = 8，y = 20。Code Fragment = zy。",
       fragmentName: "黑板片段",
@@ -83,7 +83,7 @@ const puzzlePools = {
     {
       title: "粉筆灰中的密碼",
       question:
-        "粉筆灰裡浮出：\n\n4g + 11 = 43\nj = g + 6\n\nCode Fragment = gj\n\n請輸入這段密碼片段。",
+        "粉筆灰裡浮出：\n\n4g + 11 = 43，j = g + 6。\n\nCode Fragment = gj。\n\n請輸入這段密碼片段。",
       answer: "814",
       hint: "g = 8，j = 14。Code Fragment = gj。",
       fragmentName: "黑板片段",
@@ -91,7 +91,7 @@ const puzzlePools = {
     {
       title: "黑板的反向指令",
       question:
-        "黑板寫著一條反向指令：\n\n12 - 2e = -6\nf = e + 5\n\nCode Fragment = fe\n\n請輸入這段密碼片段。",
+        "黑板寫著一條反向指令：\n\n12 - 2e = -6，f = e + 5。\n\nCode Fragment = fe。\n\n請輸入這段密碼片段。",
       answer: "149",
       hint: "12 - 2e = -6，所以 e = 9。f = 14。Code Fragment = fe。",
       fragmentName: "黑板片段",
@@ -99,7 +99,7 @@ const puzzlePools = {
     {
       title: "黑板上的二段密碼",
       question:
-        "黑板顯示：\n\n3a - 4 = 23\nb = a × 2\n\nCode Fragment = ba\n\n請輸入這段密碼片段。",
+        "黑板顯示：\n\n3a - 4 = 23，b = a × 2。\n\nCode Fragment = ba。\n\n請輸入這段密碼片段。",
       answer: "189",
       hint: "a = 9，b = 18。Code Fragment = ba。",
       fragmentName: "黑板片段",
@@ -107,7 +107,7 @@ const puzzlePools = {
     {
       title: "粉筆邊界的提示",
       question:
-        "黑板邊界寫著：\n\n5n + 15 = 65\nm = n - 3\n\nCode Fragment = nm\n\n請輸入這段密碼片段。",
+        "黑板邊界寫著：\n\n5n + 15 = 65，m = n - 3。\n\nCode Fragment = nm。\n\n請輸入這段密碼片段。",
       answer: "107",
       hint: "n = 10，m = 7。Code Fragment = nm。",
       fragmentName: "黑板片段",
@@ -115,7 +115,7 @@ const puzzlePools = {
     {
       title: "最後一行粉筆字",
       question:
-        "黑板最下方浮現：\n\n2x + 18 = 40\ny = x + 9\n\nCode Fragment = xy\n\n請輸入這段密碼片段。",
+        "黑板最下方浮現：\n\n2x + 18 = 40，y = x + 9。\n\nCode Fragment = xy。\n\n請輸入這段密碼片段。",
       answer: "1120",
       hint: "x = 11，y = 20。Code Fragment = xy。",
       fragmentName: "黑板片段",
@@ -126,7 +126,7 @@ const puzzlePools = {
     {
       title: "書桌抽屜的配方紙",
       question:
-        "上鎖的書桌裡夾著一張配方紙：\n\n紅色液體 : 藍色液體 = 3 : 2\n混合液總量是 250 ml\n\n抽屜密碼是紅色液體的毫升數。\n\n請輸入密碼。",
+        "上鎖的書桌裡夾著一張配方紙：\n\n紅色液體 : 藍色液體 = 3 : 2。\n混合液總量是 250 ml。\n\n抽屜密碼是紅色液體的毫升數。\n\n請輸入密碼。",
       answer: "150",
       hint: "總比例是 3 + 2 = 5 份。紅色液體佔 3 份，所以是 250 × 3/5。",
       fragmentName: "書桌片段",
@@ -142,7 +142,7 @@ const puzzlePools = {
     {
       title: "書桌上的比例尺",
       question:
-        "桌上有一張縮小地圖：\n\n地圖距離 : 實際距離 = 1 : 40\n地圖上量到 12 cm\n\n密碼是實際距離的 cm 數。\n\n請輸入密碼。",
+        "桌上有一張縮小地圖：\n\n地圖距離 : 實際距離 = 1 : 40。\n地圖上量到 12 cm。\n\n密碼是實際距離的 cm 數。\n\n請輸入密碼。",
       answer: "480",
       hint: "實際距離是 12 × 40。",
       fragmentName: "書桌片段",
@@ -158,7 +158,7 @@ const puzzlePools = {
     {
       title: "抽屜密碼的分配規則",
       question:
-        "抽屜裡寫著：\n\nA : B = 5 : 7\nA + B = 240\n\n密碼是 B 的值。\n\n請輸入密碼。",
+        "抽屜裡寫著：\n\nA : B = 5 : 7。\nA + B = 240。\n\n密碼是 B 的值。\n\n請輸入密碼。",
       answer: "140",
       hint: "總共 12 份，B 佔 7 份，所以 B = 240 × 7/12。",
       fragmentName: "書桌片段",
@@ -174,7 +174,7 @@ const puzzlePools = {
     {
       title: "紙盒裡的糖果比例",
       question:
-        "紙盒裡有糖果比例：\n\n紅糖 : 藍糖 = 4 : 5\n總共有 180 顆\n\n密碼是藍糖數量。\n\n請輸入密碼。",
+        "紙盒裡有糖果比例：\n\n紅糖 : 藍糖 = 4 : 5。\n總共有 180 顆。\n\n密碼是藍糖數量。\n\n請輸入密碼。",
       answer: "100",
       hint: "總共 9 份，藍糖佔 5 份，所以是 180 × 5/9。",
       fragmentName: "書桌片段",
@@ -206,7 +206,7 @@ const puzzlePools = {
     {
       title: "藥水混合比例",
       question:
-        "桌上的藥水標籤寫著：\n\n甲液 : 乙液 = 2 : 3\n總量 450 ml\n\n密碼是甲液 ml 數。\n\n請輸入密碼。",
+        "桌上的藥水標籤寫著：\n\n甲液 : 乙液 = 2 : 3。\n總量 450 ml。\n\n密碼是甲液 ml 數。\n\n請輸入密碼。",
       answer: "180",
       hint: "總共 5 份，甲液佔 2 份，所以 450 × 2/5。",
       fragmentName: "書桌片段",
@@ -238,7 +238,7 @@ const puzzlePools = {
     {
       title: "書桌上的比例陷阱",
       question:
-        "桌面浮現：\n\n甲 : 乙 = 7 : 5\n甲比乙多 48\n\n密碼是甲的值。\n\n請輸入密碼。",
+        "桌面浮現：\n\n甲 : 乙 = 7 : 5。\n甲比乙多 48。\n\n密碼是甲的值。\n\n請輸入密碼。",
       answer: "168",
       hint: "甲乙相差 2 份，2 份 = 48，所以 1 份 = 24。甲 = 7 份。",
       fragmentName: "書桌片段",
@@ -484,7 +484,7 @@ const puzzlePools = {
     {
       title: "終端機的根值驗證",
       question:
-        "SYSTEM LOCKED.\n\nx² - 9x + 20 = 0\n\nTerminal Rule:\nMultiply the two roots to generate the access key.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 9x + 20 = 0。\n\nTerminal Rule:\nMultiply the two roots to generate the access key.\n\n請輸入 access key。",
       answer: "20",
       hint: "x² - 9x + 20 = (x - 4)(x - 5)。兩根是 4 和 5。",
       fragmentName: "終端片段",
@@ -492,7 +492,7 @@ const puzzlePools = {
     {
       title: "終端機的雙根密碼",
       question:
-        "SYSTEM LOCKED.\n\nx² - 7x + 12 = 0\n\nAccess Key = sum of the two roots.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 7x + 12 = 0。\n\nAccess Key = sum of the two roots。\n\n請輸入 access key。",
       answer: "7",
       hint: "x² - 7x + 12 = (x - 3)(x - 4)。兩根和是 7。",
       fragmentName: "終端片段",
@@ -500,7 +500,7 @@ const puzzlePools = {
     {
       title: "終端機的根乘積",
       question:
-        "SYSTEM LOCKED.\n\nx² - 6x + 5 = 0\n\nAccess Key = larger root × smaller root.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 6x + 5 = 0。\n\nAccess Key = larger root × smaller root。\n\n請輸入 access key。",
       answer: "5",
       hint: "x² - 6x + 5 = (x - 1)(x - 5)。兩根乘積是 5。",
       fragmentName: "終端片段",
@@ -508,7 +508,7 @@ const puzzlePools = {
     {
       title: "終端機的較大根",
       question:
-        "SYSTEM LOCKED.\n\nx² - 8x + 15 = 0\n\nAccess Key = larger root.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 8x + 15 = 0。\n\nAccess Key = larger root。\n\n請輸入 access key。",
       answer: "5",
       hint: "x² - 8x + 15 = (x - 3)(x - 5)。較大根是 5。",
       fragmentName: "終端片段",
@@ -516,7 +516,7 @@ const puzzlePools = {
     {
       title: "終端機的較小根",
       question:
-        "SYSTEM LOCKED.\n\nx² - 11x + 30 = 0\n\nAccess Key = smaller root.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 11x + 30 = 0。\n\nAccess Key = smaller root。\n\n請輸入 access key。",
       answer: "5",
       hint: "x² - 11x + 30 = (x - 5)(x - 6)。較小根是 5。",
       fragmentName: "終端片段",
@@ -524,7 +524,7 @@ const puzzlePools = {
     {
       title: "終端機的函數輸入",
       question:
-        "SYSTEM LOCKED.\n\nf(x) = 3x + 4\n\nAccess Key = f(8)\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nf(x) = 3x + 4。\n\nAccess Key = f(8)。\n\n請輸入 access key。",
       answer: "28",
       hint: "f(8) = 3 × 8 + 4。",
       fragmentName: "終端片段",
@@ -532,7 +532,7 @@ const puzzlePools = {
     {
       title: "終端機的函數平方",
       question:
-        "SYSTEM LOCKED.\n\nf(x) = x² - 2x\n\nAccess Key = f(6)\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nf(x) = x² - 2x。\n\nAccess Key = f(6)。\n\n請輸入 access key。",
       answer: "24",
       hint: "f(6) = 36 - 12。",
       fragmentName: "終端片段",
@@ -540,7 +540,7 @@ const puzzlePools = {
     {
       title: "終端機的判別式",
       question:
-        "SYSTEM LOCKED.\n\nx² - 10x + 21 = 0\n\nAccess Key = discriminant b² - 4ac\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 10x + 21 = 0。\n\nAccess Key = discriminant b² - 4ac。\n\n請輸入 access key。",
       answer: "16",
       hint: "b² - 4ac = (-10)² - 4 × 1 × 21 = 100 - 84。",
       fragmentName: "終端片段",
@@ -548,7 +548,7 @@ const puzzlePools = {
     {
       title: "終端機的根和",
       question:
-        "SYSTEM LOCKED.\n\nx² - 13x + 40 = 0\n\nAccess Key = sum of roots.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 13x + 40 = 0。\n\nAccess Key = sum of roots。\n\n請輸入 access key。",
       answer: "13",
       hint: "二次式 x² - 13x + 40 的兩根和是 13。",
       fragmentName: "終端片段",
@@ -556,7 +556,7 @@ const puzzlePools = {
     {
       title: "終端機的根積",
       question:
-        "SYSTEM LOCKED.\n\nx² - 12x + 35 = 0\n\nAccess Key = product of roots.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 12x + 35 = 0。\n\nAccess Key = product of roots。\n\n請輸入 access key。",
       answer: "35",
       hint: "二次式 x² - 12x + 35 的兩根乘積是 35。",
       fragmentName: "終端片段",
@@ -564,7 +564,7 @@ const puzzlePools = {
     {
       title: "終端機的線性函數",
       question:
-        "SYSTEM LOCKED.\n\ng(x) = 5x - 7\n\nAccess Key = g(9)\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\ng(x) = 5x - 7。\n\nAccess Key = g(9)。\n\n請輸入 access key。",
       answer: "38",
       hint: "g(9) = 5 × 9 - 7。",
       fragmentName: "終端片段",
@@ -572,7 +572,7 @@ const puzzlePools = {
     {
       title: "終端機的雙倍驗證",
       question:
-        "SYSTEM LOCKED.\n\nx² - 5x + 6 = 0\n\nAccess Key = 2 × larger root.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 5x + 6 = 0。\n\nAccess Key = 2 × larger root。\n\n請輸入 access key。",
       answer: "6",
       hint: "兩根是 2 和 3，較大根是 3，2 × 3 = 6。",
       fragmentName: "終端片段",
@@ -580,7 +580,7 @@ const puzzlePools = {
     {
       title: "終端機的根差",
       question:
-        "SYSTEM LOCKED.\n\nx² - 14x + 45 = 0\n\nAccess Key = larger root - smaller root.\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 14x + 45 = 0。\n\nAccess Key = larger root - smaller root。\n\n請輸入 access key。",
       answer: "4",
       hint: "x² - 14x + 45 = (x - 5)(x - 9)。根差是 9 - 5。",
       fragmentName: "終端片段",
@@ -588,7 +588,7 @@ const puzzlePools = {
     {
       title: "終端機的輸出值",
       question:
-        "SYSTEM LOCKED.\n\nh(x) = 2x² + 1\n\nAccess Key = h(5)\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nh(x) = 2x² + 1。\n\nAccess Key = h(5)。\n\n請輸入 access key。",
       answer: "51",
       hint: "h(5) = 2 × 25 + 1。",
       fragmentName: "終端片段",
@@ -596,7 +596,7 @@ const puzzlePools = {
     {
       title: "終端機的最後判定",
       question:
-        "SYSTEM LOCKED.\n\nx² - 16x + 63 = 0\n\nAccess Key = smaller root + 10\n\n請輸入 access key。",
+        "SYSTEM LOCKED.\n\nx² - 16x + 63 = 0。\n\nAccess Key = smaller root + 10。\n\n請輸入 access key。",
       answer: "17",
       hint: "x² - 16x + 63 = (x - 7)(x - 9)。較小根是 7，再加 10。",
       fragmentName: "終端片段",
